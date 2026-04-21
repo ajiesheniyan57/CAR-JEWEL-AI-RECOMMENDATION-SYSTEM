@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Car Jewel AI</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-dark text-white">
+
+<div class="container mt-5">
+<h2 class="text-warning text-center">🚗 Car Jewel AI</h2>
+
+<div class="row mt-4">
+
+<div class="col-md-4">
+<div class="card p-3 bg-secondary">
+<h5>Owner</h5>
+<input id="username" class="form-control mb-2">
+<input id="password" type="password" class="form-control mb-2">
+<button class="btn btn-warning w-100" onclick="login()">Login</button>
+</div>
+</div>
+
+<div class="col-md-8">
+<div class="card p-3 bg-secondary">
+<h5>Customer</h5>
+
+<select id="interior" class="form-select mb-2"></select>
+<select id="exterior" class="form-select mb-2"></select>
+<select id="style" class="form-select mb-2"></select>
+
+<input id="price" class="form-control mb-2" value="500">
+<input id="top_n" class="form-control mb-2" value="5">
+
+<button class="btn btn-dark w-100" onclick="recommend()">Recommend</button>
+
+<ul id="results" class="list-group mt-3"></ul>
+</div>
+</div>
+
+</div>
+</div>
+
+<script>
+function loadOptions(){
+fetch("/get-options")
+.then(r=>r.json())
+.then(d=>{
+if(d.error) return;
+interior.innerHTML="";
+exterior.innerHTML="";
+style.innerHTML="";
+d.interiors.forEach(v=>interior.innerHTML+=`<option>${v}</option>`);
+d.exteriors.forEach(v=>exterior.innerHTML+=`<option>${v}</option>`);
+d.styles.forEach(v=>style.innerHTML+=`<option>${v}</option>`);
+});
+}
+
+function login(){
+fetch("/login",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username:username.value,password:password.value})})
+.then(()=>alert("Login success"));
+}
+
+function recommend(){
+fetch("/recommend",{method:"POST",headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+interior:interior.value,
+exterior:exterior.value,
+style:style.value,
+price:price.value,
+top_n:top_n.value
+})})
+.then(r=>r.json())
+.then(data=>{
+results.innerHTML="";
+data.forEach(i=>{
+results.innerHTML+=`<li class="list-group-item">${i.Product} | ₹${i.Price}</li>`;
+});
+});
+}
+
+window.onload=loadOptions;
+</script>
+
+</body>
+</html>

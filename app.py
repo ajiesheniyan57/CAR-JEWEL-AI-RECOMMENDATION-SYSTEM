@@ -5,27 +5,39 @@ import pandas as pd
 app = Flask(__name__)
 CORS(app)
 
-df = None  # 🔥 dynamic dataset
+df = None
 
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "1234"
 
-
+# ---------------- HOME (FIXED) ----------------
 @app.route('/')
 def home():
-    return render_template("index.html")
+    return render_template("login.html")   # ✅ FIXED
 
 
-# LOGIN
+# ---------------- PAGES ----------------
+@app.route('/owner')
+def owner_page():
+    return render_template("owner.html")
+
+@app.route('/customer')
+def customer_page():
+    return render_template("customer.html")
+
+
+# ---------------- LOGIN ----------------
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
+
     if data['username'] == ADMIN_USERNAME and data['password'] == ADMIN_PASSWORD:
-        return jsonify({"status": "ok"})
-    return jsonify({"status": "fail"}), 401
+        return jsonify({"role": "owner"})
+    else:
+        return jsonify({"role": "customer"})
 
 
-# 🔥 DYNAMIC UPLOAD
+# ---------------- UPLOAD ----------------
 @app.route('/upload', methods=['POST'])
 def upload():
     global df
@@ -42,7 +54,7 @@ def upload():
     except Exception as e:
         return f"Error reading file: {e}", 400
 
-    # validate columns
+    # Validate columns
     required = ['Product','Interior','Exterior','Style','Price','Stock','Rating']
     for col in required:
         if col not in df.columns:
@@ -51,20 +63,20 @@ def upload():
     return "✅ Dataset uploaded successfully"
 
 
-# OPTIONS
+# ---------------- OPTIONS ----------------
 @app.route('/get-options')
 def options():
     if df is None:
         return jsonify({"error": "Upload dataset first"})
 
     return jsonify({
-        "interiors": df['Interior'].unique().tolist(),
-        "exteriors": df['Exterior'].unique().tolist(),
-        "styles": df['Style'].unique().tolist()
+        "interiors": df['Interior'].dropna().unique().tolist(),
+        "exteriors": df['Exterior'].dropna().unique().tolist(),
+        "styles": df['Style'].dropna().unique().tolist()
     })
 
 
-# RECOMMEND
+# ---------------- RECOMMEND ----------------
 @app.route('/recommend', methods=['POST'])
 def recommend():
     global df
@@ -74,7 +86,7 @@ def recommend():
 
     data = request.json
     user_price = float(data['price'])
-    top_n = min(int(data.get('top_n', 5)), len(df))
+    top_n = int(data.get('top_n', 5))
 
     scores = []
 
@@ -95,11 +107,12 @@ def recommend():
 
         scores.append(score)
 
-    df['final_score'] = scores
-    results = df.sort_values(by='final_score', ascending=False).head(top_n)
+    df['score'] = scores
+    result = df.sort_values(by='score', ascending=False).head(top_n)
 
-    return jsonify(results.to_dict(orient="records"))
+    return jsonify(result.to_dict(orient="records"))
 
 
+# ---------------- RUN ----------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)

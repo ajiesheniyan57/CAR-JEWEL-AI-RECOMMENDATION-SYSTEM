@@ -18,11 +18,15 @@ HTML_PAGE = """
 <html>
 <head>
 <title>Car Jewel AI</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
 body {
     background: #f4f6f9;
+    font-size: 16px;
 }
 
 .navbar {
@@ -37,26 +41,37 @@ body {
     font-weight: 600;
     margin-bottom: 10px;
 }
+
+/* Mobile improvements */
+@media (max-width: 768px) {
+    h3, .section-title {
+        text-align: center;
+    }
+
+    button {
+        font-size: 18px;
+    }
+}
 </style>
 
 </head>
 
 <body>
 
-<!-- TOP NAV -->
-<nav class="navbar navbar-dark px-4">
-    <span class="navbar-brand mb-0 h1">🚗 Car Jewel AI System</span>
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark px-3">
+    <span class="navbar-brand">🚗 Car Jewel AI</span>
 </nav>
 
-<div class="container mt-4">
+<div class="container-fluid p-3">
 
-<div class="row g-4">
+<div class="row g-3">
 
 <!-- OWNER PANEL -->
-<div class="col-md-4">
+<div class="col-12 col-lg-4">
 <div class="card p-3 shadow-sm">
 
-<div class="section-title">👨‍💼 Owner Panel</div>
+<div class="section-title text-center">👨‍💼 Owner Panel</div>
 
 <input id="username" class="form-control mb-2" placeholder="Username">
 <input id="password" class="form-control mb-2" type="password" placeholder="Password">
@@ -73,45 +88,49 @@ body {
 </div>
 
 <!-- CUSTOMER PANEL -->
-<div class="col-md-8">
-<div class="card p-4 shadow-sm">
+<div class="col-12 col-lg-8">
+<div class="card p-3 shadow-sm">
 
-<div class="section-title">👤 Customer Preferences</div>
+<div class="section-title text-center">👤 Customer Preferences</div>
 
-<div class="row">
-<div class="col-md-4">
+<div class="row g-2">
+
+<div class="col-12 col-md-4">
 <label>Interior</label>
 <select id="interior" class="form-select"></select>
 </div>
 
-<div class="col-md-4">
+<div class="col-12 col-md-4">
 <label>Exterior</label>
 <select id="exterior" class="form-select"></select>
 </div>
 
-<div class="col-md-4">
+<div class="col-12 col-md-4">
 <label>Style</label>
 <select id="style" class="form-select"></select>
 </div>
+
 </div>
 
-<div class="row mt-3">
-<div class="col-md-6">
+<div class="row mt-3 g-2">
+
+<div class="col-12 col-md-6">
 <label>Budget (₹)</label>
 <input id="price" class="form-control" type="number" value="500">
 </div>
 
-<div class="col-md-6">
+<div class="col-12 col-md-6">
 <label>No. of Recommendations</label>
 <input id="top_n" class="form-control" type="number" value="5" min="1">
 </div>
+
 </div>
 
 <button class="btn btn-dark w-100 mt-3" onclick="recommend()">Get Recommendations</button>
 
 <hr>
 
-<div class="section-title">Results</div>
+<div class="section-title text-center">Results</div>
 <ul id="results" class="list-group"></ul>
 
 </div>
